@@ -17,6 +17,10 @@ permissions:
 jobs:
   release-dist-branch:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_GIT_USER_NAME: github-actions[bot]
+      RELEASE_GIT_USER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+      TOFRANKIE_SCOPE_NPM_TOKEN: ${{ secrets.TOFRANKIE_SCOPE_NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v6
         id: checkout
