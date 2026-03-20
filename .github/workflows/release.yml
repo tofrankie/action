@@ -32,6 +32,6 @@ jobs:
       - name: Build action
         run: pnpm run action:build
       - name: Create GitHub Release
-        run: pnpm run npm:build && pnpm run npm:cli -- --yes --tag "${{ github.event.inputs.tag || github.ref_name }}" --ref "${{ steps.checkout.outputs.commit }}" --token "${{ github.token }}"
+        run: pnpm run npm:build && node bin/cli.js --yes --tag "${{ github.event.inputs.tag || github.ref_name }}" --ref "${{ steps.checkout.outputs.commit }}" --token "${{ github.token }}"
       - name: Publish dist branch
         run: pnpm run action:release
