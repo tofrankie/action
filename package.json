@@ -1,0 +1,84 @@
+{
+  "name": "@tofrankie/action",
+  "type": "module",
+  "version": "0.0.1",
+  "packageManager": "pnpm@10.32.0",
+  "description": "GitHub Action for changelog-based releases",
+  "author": "Frankie <1426203851@qq.com> (https://github.com/tofrankie)",
+  "license": "MIT",
+  "homepage": "https://github.com/tofrankie/action",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tofrankie/action.git"
+  },
+  "bugs": "https://github.com/tofrankie/action/issues",
+  "keywords": [
+    "github-action",
+    "release",
+    "tofrankie"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "bin": {
+    "tofrankie-release": "bin/cli.js",
+    "tfr": "bin/cli.js"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "bin",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "npm:cli": "node bin/cli.js",
+    "npm:build": "tsdown --filter npm",
+    "prepublishOnly": "run-s lint test npm:build",
+    "action:build": "tsdown --filter action",
+    "action:release": "tsx scripts/release.ts",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "run-s lint:eslint lint:prettier check",
+    "lint:eslint": "eslint . --cache --fix",
+    "lint:prettier": "prettier . --cache --write --log-level silent",
+    "check": "tsc --noEmit",
+    "publint": "publint"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.0",
+    "@actions/github": "^9.0.0",
+    "@inquirer/prompts": "^8.3.2",
+    "commander": "^14.0.3",
+    "execa": "^9.6.1",
+    "fast-glob": "^3.3.3",
+    "semver": "^7.7.2",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@tofrankie/eslint": "^0.0.15",
+    "@tofrankie/prettier": "^0.0.5",
+    "@types/node": "^25.5.0",
+    "@types/semver": "^7.7.1",
+    "@vitest/coverage-v8": "^4.1.0",
+    "eslint": "^9.39.4",
+    "npm-run-all2": "^8.0.4",
+    "prettier": "^3.6.2",
+    "publint": "^0.3.18",
+    "tsdown": "^0.21.4",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.0"
+  }
+}

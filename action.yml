@@ -1,0 +1,35 @@
+name: '@tofrankie/action'
+description: Create or update GitHub Release from changelog
+inputs:
+  github-token:
+    description: GitHub token used for release APIs
+    required: false
+    default: ${{ github.token }}
+  tag:
+    description: 'Tag name, required for workflow_dispatch when ref is not a tag'
+    required: false
+  ref:
+    description: Git reference for target_commitish
+    required: false
+  changelog-path:
+    description: Optional custom changelog path
+    required: false
+  publish-npm:
+    description: Whether to publish npm package
+    required: false
+    default: 'false'
+  npm-token:
+    description: npm token when publish-npm is true
+    required: false
+outputs:
+  release-url:
+    description: GitHub Release URL
+  npm-status:
+    description: npm publish status
+  resolved-package-name:
+    description: Resolved package name
+  resolved-version:
+    description: Resolved package version
+runs:
+  using: node24
+  main: dist/action.mjs
