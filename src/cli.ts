@@ -95,11 +95,19 @@ async function runCli(): Promise<void> {
     version: parsed.normalizedVersion,
   })
 
-  console.log(`\n${formatMessage('Release preview')}`)
-  console.log(`- package: ${resolvedPackage.packageName}`)
-  console.log(`- tag: ${selectedTag}`)
-  console.log(`- version: ${parsed.normalizedVersion}`)
-  console.log(`- changelog title: ${entry.title}`)
+  console.log(`\n${formatMessage('GitHub Release preview')}`)
+  console.log(formatMessage(`  - package: ${resolvedPackage.packageName}`))
+  console.log(formatMessage(`  - tag: ${selectedTag}`))
+  console.log(formatMessage(`  - version: ${parsed.normalizedVersion}`))
+  console.log(formatMessage(`  - changelog title: ${entry.title}`))
+  console.log(
+    formatMessage(
+      `  - changelog body:\n${entry.body
+        .split('\n')
+        .map(line => `  ${line}`)
+        .join('\n')}`
+    )
+  )
 
   const shouldRelease = args.yes
     ? true
@@ -223,9 +231,9 @@ async function runCli(): Promise<void> {
     }
   )
 
-  console.log(`\n${formatMessage('Release completed')}`)
-  console.log(`- action: ${result.releaseAction}`)
-  console.log(`- url: ${result.releaseUrl}`)
+  console.log(`\n${formatMessage('GitHub Release completed')}`)
+  console.log(formatMessage(`  - action: ${result.releaseAction}`))
+  console.log(formatMessage(`  - url: ${result.releaseUrl}`))
 }
 
 export interface CliArgs {
