@@ -3,7 +3,13 @@ name: release
 on:
   push:
     tags:
-      - '*'
+      - '**'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. @tofrankie/action@0.0.1)'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -13,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        id: checkout
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
@@ -23,6 +32,6 @@ jobs:
       - name: Build action
         run: pnpm run action:build
       - name: Create GitHub Release
-        run: pnpm run npm:build && pnpm run npm:cli -- --yes --tag "${{ github.ref_name }}" --ref "${{ github.sha }}" --token "${{ github.token }}"
+        run: pnpm run npm:build && pnpm run npm:cli -- --yes --tag "${{ github.event.inputs.tag || github.ref_name }}" --ref "${{ steps.checkout.outputs.commit }}" --token "${{ github.token }}"
       - name: Publish dist branch
         run: pnpm run action:release
