@@ -242,6 +242,24 @@ $ pnpx @tofrankie/action tfr --tag v1.2.3 --publish-npm --npm-token <npm_token>
 $ npx @tofrankie/action tfr --tag v1.2.3 --token <github_token>
 ```
 
+### 如何创建 GitHub Token（最小权限）
+
+本工具会读取 tags、读取/创建/更新 GitHub Release，因此需要对目标仓库具备 `contents` 写权限。
+
+- **Fine-grained PAT（推荐）**
+  1. GitHub 头像 → `Settings` → `Developer settings` → `Personal access tokens` → `Fine-grained tokens`
+  2. `Generate new token`
+  3. `Resource owner` 选择所有者，选择当前用户或所属组织
+  4. `Repository access` 选择目标仓库（建议只选需要发布的仓库）
+  5. `Repository permissions` 至少授予：`Contents: Read and write`
+  6. 创建后复制 token，作为 `--token` 或环境变量 `GITHUB_RELEASE_TOKEN`
+
+- **Classic PAT**
+  - 公开仓库：最少可用 `public_repo`
+  - 私有仓库：需要 `repo`
+
+建议优先使用 Fine-grained PAT，并仅授权最小仓库范围。
+
 ### CLI 做了什么
 
 CLI 与 Action 共用同一套核心逻辑（`publishRelease`），大致步骤如下：
