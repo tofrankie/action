@@ -95,7 +95,7 @@ async function runCli(): Promise<void> {
     version: parsed.normalizedVersion,
   })
 
-  console.log(`\n${formatMessage('GitHub Release preview')}`)
+  console.log(`\n${formatMessage('GitHub Release preview 🔍')}`)
   console.log(formatMessage(`  - package: ${resolvedPackage.packageName}`))
   console.log(formatMessage(`  - tag: ${selectedTag}`))
   console.log(formatMessage(`  - version: ${parsed.normalizedVersion}`))
@@ -104,14 +104,30 @@ async function runCli(): Promise<void> {
     formatMessage(
       `  - changelog body:\n${entry.body
         .split('\n')
-        .map(line => `  ${line}`)
+        .map(line => `    ${line}`)
         .join('\n')}`
     )
   )
 
+  const existingRelease = await octokit.rest.repos
+    .getReleaseByTag({ owner, repo, tag: selectedTag })
+    .then(() => true)
+    .catch((error: unknown) => {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'status' in error &&
+        error.status === 404
+      ) {
+        return false
+      }
+      throw error
+    })
+  const releaseActionLabel = existingRelease ? 'Update' : 'Create'
+
   const shouldRelease = args.yes
     ? true
-    : await confirm({ message: 'Create or update GitHub Release?', default: false })
+    : await confirm({ message: `${releaseActionLabel} GitHub Release?`, default: true })
   if (!shouldRelease) {
     console.log(formatMessage('Cancelled...'))
     return
@@ -231,7 +247,7 @@ async function runCli(): Promise<void> {
     }
   )
 
-  console.log(`\n${formatMessage('GitHub Release completed')}`)
+  console.log(`\n${formatMessage('GitHub Release published 🎉')}`)
   console.log(formatMessage(`  - action: ${result.releaseAction}`))
   console.log(formatMessage(`  - url: ${result.releaseUrl}`))
 }

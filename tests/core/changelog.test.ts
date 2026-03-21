@@ -11,7 +11,7 @@ afterEach(async () => {
 })
 
 describe('readChangelogEntry', () => {
-  it('matches [title] - date format', async () => {
+  it('matches when heading contains a candidate and keeps raw title', async () => {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'changelog-test-'))
     tempDirs.push(dir)
     const changelog = path.join(dir, 'CHANGELOG.md')
@@ -31,7 +31,7 @@ describe('readChangelogEntry', () => {
       packageName: '@tofrankie/action',
       version: '1.0.0',
     })
-    expect(got.title).toBe('@tofrankie/action@1.0.0')
+    expect(got.title).toBe('[@tofrankie/action@1.0.0] - 2026-03-21')
     expect(got.body).toContain('hello')
   })
 
@@ -48,5 +48,53 @@ describe('readChangelogEntry', () => {
         version: '9.9.9',
       })
     ).rejects.toThrow('Version entry not found')
+  })
+
+  it('matches title with parenthesized date format', async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'changelog-test-'))
+    tempDirs.push(dir)
+    const changelog = path.join(dir, 'CHANGELOG.md')
+    await fs.writeFile(
+      changelog,
+      `# Changelog
+
+## example@0.0.3 (2026-03-20)
+
+- non-functional changes
+`,
+      'utf8'
+    )
+
+    const got = await readChangelogEntry({
+      changelogPath: changelog,
+      packageName: '@tofrankie/example',
+      version: '0.0.3',
+    })
+    expect(got.title).toBe('example@0.0.3 (2026-03-20)')
+    expect(got.body).toContain('non-functional changes')
+  })
+
+  it('matches custom heading that includes package tag', async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'changelog-test-'))
+    tempDirs.push(dir)
+    const changelog = path.join(dir, 'CHANGELOG.md')
+    await fs.writeFile(
+      changelog,
+      `# Changelog
+
+## Release for example@0.0.3 🚀
+
+- custom heading style
+`,
+      'utf8'
+    )
+
+    const got = await readChangelogEntry({
+      changelogPath: changelog,
+      packageName: '@tofrankie/example',
+      version: '0.0.3',
+    })
+    expect(got.title).toBe('Release for example@0.0.3 🚀')
+    expect(got.body).toContain('custom heading style')
   })
 })

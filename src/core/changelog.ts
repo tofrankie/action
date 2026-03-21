@@ -6,16 +6,6 @@ export interface ChangelogEntry {
   body: string
 }
 
-function normalizeTitle(rawTitle: string): string {
-  const title = rawTitle.trim()
-  const bracket = title.match(
-    /^\[([^\]]+)\](?:\s*-\s*(?:\S.*|[\t\v\f \xA0\u1680\u2000-\u200A\u202F\u205F\u3000\uFEFF]))?$/
-  )
-  if (bracket) return bracket[1].trim()
-  const plain = title.match(/^(.+?)(?:\s*-\s*\d{4}-\d{2}-\d{2})?$/)
-  return plain ? plain[1].trim() : title
-}
-
 export async function readChangelogEntry(params: {
   changelogPath: string
   packageName: string
@@ -32,16 +22,16 @@ export async function readChangelogEntry(params: {
 
   const content = await fs.readFile(changelogPath, 'utf8')
   const lines = content.split(/\r?\n/)
-  const headings: Array<{ index: number; raw: string; logical: string }> = []
+  const headings: Array<{ index: number; raw: string }> = []
 
   for (let i = 0; i < lines.length; i += 1) {
     const m = lines[i].match(/^##\s+(.+)$/)
     if (!m) continue
     const raw = m[1].trim()
-    headings.push({ index: i, raw, logical: normalizeTitle(raw) })
+    headings.push({ index: i, raw })
   }
 
-  const found = headings.find(item => candidates.includes(item.logical))
+  const found = headings.find(item => candidates.some(candidate => item.raw.includes(candidate)))
   if (!found) {
     throw new DomainError(
       'CHANGELOG_ENTRY_NOT_FOUND',
@@ -57,8 +47,8 @@ export async function readChangelogEntry(params: {
     .trim()
 
   if (!body) {
-    throw new DomainError('CHANGELOG_ENTRY_EMPTY', `Changelog entry is empty for ${found.logical}.`)
+    throw new DomainError('CHANGELOG_ENTRY_EMPTY', `Changelog entry is empty for ${found.raw}.`)
   }
 
-  return { title: found.logical, body }
+  return { title: found.raw, body }
 }

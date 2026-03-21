@@ -151,35 +151,39 @@ monorepo 仅支持以下格式：
 必须存在 `CHANGELOG.md`（或显式指定 `changelog-path`），并包含对应版本条目。  
 对于 monorepo，会先根据 workspace 与 tag 解析目标包，再匹配该包对应的 `CHANGELOG.md` 条目；这也是多包仓库必须使用带包名 tag（如 `name@version`）的原因。
 
-标题匹配优先级：
+标题匹配规则：
 
-1. `<packageName>@<version>` 如 `@scope/pkg-a@1.2.3`
-2. `<unscopedName>@<version>` 如 `pkg-a@1.2.3`
-3. `v<version>` 如 `v1.2.3`
-4. `<version>` 如 `1.2.3`
-
-支持标题格式：
-
-- `## <title>`
-- `## [<title>]`
-- `## [<title>] - <date>`
+- 只要标题包含以下任一标识，即可匹配到对应版本：
+  1. `<packageName>@<version>`（如 `@scope/pkg-a@1.2.3`）
+  2. `<unscopedName>@<version>`（如 `pkg-a@1.2.3`）
+  3. `v<version>`（如 `v1.2.3`）
+  4. `<version>`（如 `1.2.3`）
+- 命中后会将该行标题（`##` 后的完整原文）直接作为 GitHub Release 标题
 
 示例（`CHANGELOG.md`）：
 
 ```md
 # Changelog
 
-## @scope/pkg-a@1.2.3 - 2026-03-21
+## @scope/pkg-a@0.0.4 - 2026-03-21
 
 ### Features
 
 - add xxx
 
-## @scope/pkg-a@1.2.2 - 2026-03-18
+## @scope/pkg-a@0.0.3 - 2026-03-18
 
 ### Fixes
 
 - fix yyy
+
+## pkg-a@0.0.2 (2026-03-17)
+
+- non-functional changes
+
+## Release for pkg-a@0.0.1 🚀
+
+- custom heading style
 ```
 
 ## Action 背后做了什么

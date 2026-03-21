@@ -72,9 +72,9 @@ export async function publishRelease(
     version: parsed.normalizedVersion,
   })
 
-  deps.logger.info(`Resolved package: ${resolvedPackage.packageName}`)
+  deps.logger.info(`🐳 Resolved package: ${resolvedPackage.packageName}`)
   deps.logger.info(
-    `Resolved changelog: ${path.relative(rootDir, changelogPath.path)} (${changelogPath.source})`
+    `🐳 Resolved changelog: ${path.relative(rootDir, changelogPath.path)} (${changelogPath.source})`
   )
 
   if (deps.releaseClient.getTagCommit && deps.releaseClient.getRefCommit) {
