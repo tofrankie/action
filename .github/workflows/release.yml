@@ -1,4 +1,5 @@
-name: release
+# 构建 Action → 创建/更新 GitHub Release → 将 dist 推送到发布分支（如 v1）
+name: Release pipeline
 
 on:
   push:
@@ -15,7 +16,7 @@ permissions:
   contents: write
 
 jobs:
-  release-dist-branch:
+  release-pipeline:
     runs-on: ubuntu-latest
     env:
       RELEASE_GIT_USER_NAME: github-actions[bot]

@@ -1,5 +1,8 @@
 name: '@tofrankie/action'
 description: Create or update GitHub Release from changelog
+branding:
+  icon: anchor
+  color: gray-dark
 inputs:
   github-token:
     description: GitHub token used for release APIs

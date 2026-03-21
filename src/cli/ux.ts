@@ -1,5 +1,8 @@
 const PREFIX = '🐳'
 
 export function formatMessage(message: string): string {
-  return `${PREFIX} ${message}`
+  return message
+    .split(/\r?\n/)
+    .map(line => `${PREFIX} ${line}`)
+    .join('\n')
 }
