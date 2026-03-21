@@ -33,5 +33,7 @@ async function run(): Promise<void> {
   await execa('git', ['commit', '-m', `chore(release): update dist for ${branch}`], {
     stdio: 'inherit',
   })
-  await execa('git', ['push', '-u', 'origin', branch], { stdio: 'inherit' })
+  // 发布分支（如 v1）只承载当前 tag 下的 dist，与 main 历史无关；每次提交基于 detached HEAD，
+  // 与远端同名分支易形成非快进历史，需覆盖推送。
+  await execa('git', ['push', '-f', '-u', 'origin', branch], { stdio: 'inherit' })
 }
