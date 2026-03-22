@@ -16,7 +16,7 @@ describe('ensureRelease', () => {
       isPrerelease: false,
     })
 
-    expect(got).toEqual({ releaseUrl: 'https://example.com/new', action: 'created' })
+    expect(got).toEqual({ githubReleaseUrl: 'https://example.com/new', action: 'created' })
     expect(createRelease).toHaveBeenCalledOnce()
   })
 
@@ -34,7 +34,7 @@ describe('ensureRelease', () => {
       isPrerelease: true,
     })
 
-    expect(got).toEqual({ releaseUrl: 'https://example.com/update', action: 'updated' })
+    expect(got).toEqual({ githubReleaseUrl: 'https://example.com/update', action: 'updated' })
     expect(updateRelease).toHaveBeenCalledOnce()
   })
 })

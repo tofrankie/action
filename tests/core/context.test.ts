@@ -2,38 +2,35 @@ import { describe, expect, it } from 'vitest'
 import { resolveContext } from '@/core/context.js'
 
 describe('resolveContext', () => {
-  it('resolves tag from input first', () => {
+  it('prefers tag input over trigger ref', () => {
     const got = resolveContext(
       {
-        tag: 'v1.0.0',
+        tag: 'manual-v1',
         publishNpm: false,
         githubToken: 'ghs_xxx',
       },
-      { eventName: 'workflow_dispatch', githubRef: 'refs/tags/v0.0.1' }
+      { eventName: 'push', githubRef: 'refs/tags/v1.0.0' }
     )
-    expect(got.tag).toBe('v1.0.0')
+    expect(got.tag).toBe('manual-v1')
   })
 
-  it('falls back to tag from github ref', () => {
+  it('extracts tag from githubRef if not provided in inputs', () => {
     const got = resolveContext(
       {
         publishNpm: false,
         githubToken: 'ghs_xxx',
       },
-      { eventName: 'push', githubRef: 'refs/tags/v1.2.3' }
+      { eventName: 'push', githubRef: 'refs/tags/v2.0.0' }
     )
-    expect(got.tag).toBe('v1.2.3')
+    expect(got.tag).toBe('v2.0.0')
   })
 
-  it('throws when publish-npm=true but no npm token', () => {
+  it('throws when no tag can be resolved', () => {
     expect(() =>
       resolveContext(
-        {
-          publishNpm: true,
-          githubToken: 'ghs_xxx',
-        },
-        { eventName: 'workflow_dispatch', githubRef: 'refs/tags/v1.2.3' }
+        { publishNpm: false, githubToken: 'ghs_xxx' },
+        { eventName: 'workflow_dispatch' }
       )
-    ).toThrow('npm-token')
+    ).toThrow('Unable to resolve tag from inputs or GitHub ref.')
   })
 })

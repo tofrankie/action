@@ -21,11 +21,8 @@ inputs:
     description: Whether to publish npm package
     required: false
     default: 'false'
-  npm-token:
-    description: npm token when publish-npm is true
-    required: false
 outputs:
-  release-url:
+  github-release-url:
     description: GitHub Release URL
   npm-status:
     description: npm publish status

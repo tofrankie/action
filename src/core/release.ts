@@ -29,7 +29,7 @@ export interface EnsureReleaseInput {
 }
 
 export interface EnsureReleaseResult {
-  releaseUrl: string
+  githubReleaseUrl: string
   action: 'created' | 'updated'
 }
 
@@ -43,7 +43,7 @@ export async function ensureRelease(input: EnsureReleaseInput): Promise<EnsureRe
       target_commitish: input.targetCommitish,
       prerelease: input.isPrerelease,
     })
-    return { releaseUrl: created.html_url, action: 'created' }
+    return { githubReleaseUrl: created.html_url, action: 'created' }
   }
 
   const updated = await input.client.updateRelease({
@@ -54,5 +54,5 @@ export async function ensureRelease(input: EnsureReleaseInput): Promise<EnsureRe
     target_commitish: input.targetCommitish,
     prerelease: input.isPrerelease,
   })
-  return { releaseUrl: updated.html_url, action: 'updated' }
+  return { githubReleaseUrl: updated.html_url, action: 'updated' }
 }

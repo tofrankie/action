@@ -6,7 +6,6 @@ export interface ActionInputs {
   changelogPathInput?: string
   publishNpm: boolean
   githubToken: string
-  npmToken?: string
 }
 
 export interface TriggerContext {
@@ -21,7 +20,6 @@ export interface ResolvedContext {
   publishNpm: boolean
   changelogPathInput?: string
   githubToken: string
-  npmToken?: string
 }
 
 function extractTagFromRef(ref?: string): string | undefined {
@@ -39,16 +37,11 @@ export function resolveContext(inputs: ActionInputs, trigger: TriggerContext): R
     })
   }
 
-  if (inputs.publishNpm && !inputs.npmToken) {
-    throw new DomainError('MISSING_NPM_TOKEN', '`publish-npm` is true but `npm-token` is missing.')
-  }
-
   return {
     tag,
     ref: inputs.ref ?? trigger.githubRef,
     publishNpm: inputs.publishNpm,
     changelogPathInput: inputs.changelogPathInput,
     githubToken: inputs.githubToken,
-    npmToken: inputs.npmToken,
   }
 }

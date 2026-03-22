@@ -61,7 +61,7 @@ describe('publishRelease', () => {
       body: '- test',
     })
     mockEnsureRelease.mockResolvedValue({
-      releaseUrl: 'https://example.com/release',
+      githubReleaseUrl: 'https://example.com/release',
       action: 'created',
     })
     mockHasNpmVersion.mockResolvedValue(false)
@@ -90,7 +90,7 @@ describe('publishRelease', () => {
     mockHasNpmVersion.mockResolvedValue(true)
     const warn = vi.fn()
     const got = await publishRelease(
-      { tag: 'v1.0.0', publishNpm: true, npmToken: 'npm_xxx' },
+      { tag: 'v1.0.0', publishNpm: true },
       {
         releaseClient: {
           getReleaseByTag: async () => null,
@@ -108,7 +108,7 @@ describe('publishRelease', () => {
 
   it('publishes npm when enabled and version not found', async () => {
     const got = await publishRelease(
-      { tag: 'v1.0.0', publishNpm: true, npmToken: 'npm_xxx' },
+      { tag: 'v1.0.0', publishNpm: true },
       {
         releaseClient: {
           getReleaseByTag: async () => null,

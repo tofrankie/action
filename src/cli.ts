@@ -7,6 +7,8 @@ import { execa } from 'execa'
 import { formatMessage } from '@/cli/ux.js'
 import { resolveChangelogPath } from '@/core/changelog-path.js'
 import { readChangelogEntry } from '@/core/changelog.js'
+import { toErrorMessage } from '@/core/errors.js'
+import { createGitHubReleaseClient } from '@/core/github-client.js'
 import { selectTagsForPackage } from '@/core/github-tags.js'
 import {
   isMonorepoWorkspace,
@@ -27,7 +29,7 @@ function main() {
       console.log(formatMessage('Cancelled...'))
       process.exit(0)
     }
-    console.error(msg)
+    console.error(toErrorMessage(error))
     process.exit(1)
   })
 }
@@ -144,99 +146,13 @@ async function runCli(): Promise<void> {
     }
   }
 
-  const releaseClient = {
-    async getReleaseByTag(tag: string): Promise<{ id: number } | null> {
-      try {
-        const res = await octokit.rest.repos.getReleaseByTag({ owner, repo, tag })
-        return { id: res.data.id }
-      } catch (error: unknown) {
-        if (
-          typeof error === 'object' &&
-          error !== null &&
-          'status' in error &&
-          error.status === 404
-        ) {
-          return null
-        }
-        throw error
-      }
-    },
-
-    async createRelease(input: {
-      tag_name: string
-      name: string
-      body: string
-      target_commitish?: string
-      prerelease: boolean
-    }): Promise<{ html_url: string }> {
-      const res = await octokit.rest.repos.createRelease({
-        owner,
-        repo,
-        tag_name: input.tag_name,
-        name: input.name,
-        body: input.body,
-        target_commitish: input.target_commitish,
-        prerelease: input.prerelease,
-      })
-      return { html_url: res.data.html_url }
-    },
-
-    async getTagCommit(tag: string): Promise<string | null> {
-      try {
-        const ref = await octokit.rest.git.getRef({ owner, repo, ref: `tags/${tag}` })
-        const sha = ref.data.object.sha
-        if (ref.data.object.type === 'commit') return sha
-        const annotated = await octokit.rest.git.getTag({ owner, repo, tag_sha: sha })
-        return annotated.data.object.sha
-      } catch {
-        return null
-      }
-    },
-
-    async getRefCommit(ref: string): Promise<string | null> {
-      const normalized = ref.replace(/^refs\//, '')
-      try {
-        const data = await octokit.rest.git.getRef({ owner, repo, ref: normalized })
-        if (data.data.object.type === 'commit') return data.data.object.sha
-        const annotated = await octokit.rest.git.getTag({
-          owner,
-          repo,
-          tag_sha: data.data.object.sha,
-        })
-        return annotated.data.object.sha
-      } catch {
-        return null
-      }
-    },
-
-    async updateRelease(input: {
-      release_id: number
-      tag_name: string
-      name: string
-      body: string
-      target_commitish?: string
-      prerelease: boolean
-    }): Promise<{ html_url: string }> {
-      const res = await octokit.rest.repos.updateRelease({
-        owner,
-        repo,
-        release_id: input.release_id,
-        tag_name: input.tag_name,
-        name: input.name,
-        body: input.body,
-        target_commitish: input.target_commitish,
-        prerelease: input.prerelease,
-      })
-      return { html_url: res.data.html_url }
-    },
-  }
+  const releaseClient = createGitHubReleaseClient(octokit, { owner, repo })
 
   const result = await publishRelease(
     {
       tag: selectedTag,
       ref: args.ref,
       publishNpm: shouldPublishNpm,
-      npmToken: shouldPublishNpm ? (args.npmToken ?? process.env.NPM_TOKEN) : undefined,
     },
     {
       releaseClient,
@@ -249,12 +165,11 @@ async function runCli(): Promise<void> {
 
   console.log(`\n${formatMessage('GitHub Release published 🎉')}`)
   console.log(formatMessage(`  - action: ${result.releaseAction}`))
-  console.log(formatMessage(`  - url: ${result.releaseUrl}`))
+  console.log(formatMessage(`  - url: ${result.githubReleaseUrl}`))
 }
 
 export interface CliArgs {
   token?: string
-  npmToken?: string
   tag?: string
   ref?: string
   publishNpm: boolean
@@ -266,7 +181,6 @@ export function parseArgs(argv: string[]): CliArgs {
     .name('tofrankie-release')
     .description('Create or update GitHub Release from local repository')
     .option('--token <token>', 'GitHub token')
-    .option('--npm-token <token>', 'npm token for publish')
     .option('--tag <tag>', 'tag to release (skip tag prompt)')
     .option('--ref <ref>', 'ref to validate against tag')
     .option('--publish-npm', 'publish package to npm', false)
@@ -275,7 +189,6 @@ export function parseArgs(argv: string[]): CliArgs {
   program.parse(argv, { from: 'user' })
   const opts = program.opts<{
     token?: string
-    npmToken?: string
     tag?: string
     ref?: string
     publishNpm: boolean
@@ -284,7 +197,6 @@ export function parseArgs(argv: string[]): CliArgs {
 
   return {
     token: opts.token,
-    npmToken: opts.npmToken,
     tag: opts.tag,
     ref: opts.ref,
     publishNpm: opts.publishNpm,

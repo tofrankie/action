@@ -18,10 +18,17 @@ export class DomainError extends Error {
 
 export function toErrorMessage(error: unknown): string {
   if (error instanceof DomainError) {
-    return `${error.code}: ${error.message}${error.hint ? ` (${error.hint})` : ''}`
+    const lines = [`[${error.code}] ${error.message}`]
+    if (error.hint) {
+      lines.push(`💡 Hint: ${error.hint}`)
+    }
+    if (error.context && Object.keys(error.context).length > 0) {
+      lines.push(`📦 Context: ${JSON.stringify(error.context, null, 2)}`)
+    }
+    return lines.join('\n')
   }
   if (error instanceof Error) {
-    return error.message
+    return error.stack ?? error.message
   }
   return String(error)
 }

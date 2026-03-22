@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
 import { hasNpmVersion, publishNpmPackage } from '@/core/npm.js'
 
 const { mockExeca } = vi.hoisted(() => ({
@@ -31,7 +30,6 @@ describe('npm core', () => {
       packageDir: '/tmp/pkg',
       packageName: '@tofrankie/action',
       isPrerelease: true,
-      npmToken: 'npm_xxx',
     })
 
     expect(mockExeca).toHaveBeenNthCalledWith(
@@ -46,5 +44,19 @@ describe('npm core', () => {
       ['publish', '--access', 'public', '--tag', 'next'],
       expect.objectContaining({ cwd: '/tmp/pkg' })
     )
+  })
+
+  it('throws DomainError on authentication failure', async () => {
+    const error = new Error('npm error')
+    ;(error as any).stderr = 'ENEEDAUTH: This command requires you to be logged in.'
+    mockExeca.mockRejectedValue(error)
+
+    await expect(
+      publishNpmPackage({
+        packageDir: '/tmp/pkg',
+        packageName: 'pkg',
+        isPrerelease: false,
+      })
+    ).rejects.toThrow('npm publish failed due to authentication error')
   })
 })

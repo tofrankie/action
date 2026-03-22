@@ -46,7 +46,6 @@ describe('action/io', () => {
       tag: 'v1.2.3',
       ref: 'refs/heads/main',
       changelogPathInput: 'CHANGELOG.md',
-      npmToken: 'npm_xxx',
     })
   })
 
@@ -74,13 +73,13 @@ describe('action/io', () => {
 
   it('writes outputs with stable keys', () => {
     setOutputs({
-      releaseUrl: 'https://github.com/org/repo/releases/tag/v1.0.0',
+      githubReleaseUrl: 'https://github.com/org/repo/releases/tag/v1.0.0',
       npmStatus: 'skipped',
       packageName: '@tofrankie/action',
       version: '1.0.0',
     })
 
-    expect(mockSetOutput).toHaveBeenCalledWith('release-url', expect.any(String))
+    expect(mockSetOutput).toHaveBeenCalledWith('github-release-url', expect.any(String))
     expect(mockSetOutput).toHaveBeenCalledWith('npm-status', 'skipped')
     expect(mockSetOutput).toHaveBeenCalledWith('resolved-package-name', '@tofrankie/action')
     expect(mockSetOutput).toHaveBeenCalledWith('resolved-version', '1.0.0')

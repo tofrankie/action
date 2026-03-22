@@ -14,7 +14,6 @@ export interface PublishRequest {
   ref?: string
   changelogPathInput?: string
   publishNpm: boolean
-  npmToken?: string
 }
 
 export interface PublishResult {
@@ -23,7 +22,7 @@ export interface PublishResult {
   version: string
   releaseTag: string
   releaseTitle: string
-  releaseUrl: string
+  githubReleaseUrl: string
   releaseAction: 'created' | 'updated'
   npmStatus: NpmStatus
   changelogPath: string
@@ -105,14 +104,10 @@ export async function publishRelease(
       npmStatus = 'already-exists'
       deps.logger.warn?.(`npm version already exists: ${packageName}@${parsed.normalizedVersion}`)
     } else {
-      if (!req.npmToken) {
-        throw new Error('npm token is required when publishNpm=true')
-      }
       await publishNpmPackage({
         packageDir: resolvedPackage.packageDir,
         packageName,
         isPrerelease: parsed.isPrerelease,
-        npmToken: req.npmToken,
       })
       npmStatus = 'published'
     }
@@ -124,7 +119,7 @@ export async function publishRelease(
     version: parsed.normalizedVersion,
     releaseTag: req.tag,
     releaseTitle: entry.title,
-    releaseUrl: ensured.releaseUrl,
+    githubReleaseUrl: ensured.githubReleaseUrl,
     releaseAction: ensured.action,
     npmStatus,
     changelogPath: changelogPath.path,

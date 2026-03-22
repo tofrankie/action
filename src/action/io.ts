@@ -15,7 +15,6 @@ export function readActionInputs(): ActionInputs {
     tag: core.getInput('tag') || undefined,
     ref: core.getInput('ref') || undefined,
     changelogPathInput: core.getInput('changelog-path') || undefined,
-    npmToken: core.getInput('npm-token') || undefined,
   }
 }
 
@@ -28,12 +27,12 @@ export function readTriggerContext(): TriggerContext {
 }
 
 export function setOutputs(outputs: {
-  releaseUrl: string
+  githubReleaseUrl: string
   npmStatus: string
   packageName: string
   version: string
 }): void {
-  core.setOutput('release-url', outputs.releaseUrl)
+  core.setOutput('github-release-url', outputs.githubReleaseUrl)
   core.setOutput('npm-status', outputs.npmStatus)
   core.setOutput('resolved-package-name', outputs.packageName)
   core.setOutput('resolved-version', outputs.version)

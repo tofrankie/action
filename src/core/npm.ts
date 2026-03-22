@@ -1,4 +1,5 @@
 import { execa } from 'execa'
+import { DomainError } from '@/core/errors.js'
 
 export type NpmStatus = 'skipped' | 'published' | 'already-exists'
 
@@ -15,7 +16,6 @@ export async function publishNpmPackage(input: {
   packageDir: string
   packageName: string
   isPrerelease: boolean
-  npmToken: string
 }): Promise<void> {
   const args = ['publish']
   if (input.packageName.startsWith('@')) {
@@ -25,13 +25,25 @@ export async function publishNpmPackage(input: {
     args.push('--tag', 'next')
   }
 
-  await execa('npm', ['pack', '--dry-run'], {
-    cwd: input.packageDir,
-    env: { NODE_AUTH_TOKEN: input.npmToken },
-  })
-  await execa('npm', args, {
-    cwd: input.packageDir,
-    env: { NODE_AUTH_TOKEN: input.npmToken },
-    stdio: 'inherit',
-  })
+  try {
+    await execa('npm', ['pack', '--dry-run'], {
+      cwd: input.packageDir,
+    })
+    await execa('npm', args, {
+      cwd: input.packageDir,
+      stdio: 'inherit',
+    })
+  } catch (error: any) {
+    const stderr = error.stderr || ''
+    if (stderr.includes('401') || stderr.includes('403') || stderr.includes('ENEEDAUTH')) {
+      throw new DomainError(
+        'NPM_PUBLISH_AUTH_ERROR',
+        'npm publish failed due to authentication error.',
+        {
+          hint: 'Ensure you are logged in or have a valid .npmrc with auth token. For example: //registry.npmjs.org/:_authToken=<YOUR_TOKEN>',
+        }
+      )
+    }
+    throw error
+  }
 }
