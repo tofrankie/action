@@ -25,6 +25,7 @@ This project is a dual-purpose tool (GitHub Action and CLI) designed for changel
 ## Building and Running
 
 ### Development Commands
+
 - **Install dependencies**: `pnpm install`
 - **Run tests**: `pnpm test` (uses Vitest)
 - **Linting**: `pnpm lint` (ESLint + Prettier + Type-check)
@@ -33,6 +34,7 @@ This project is a dual-purpose tool (GitHub Action and CLI) designed for changel
 - **Build Action**: `pnpm run action:build`
 
 ### CLI Usage (Local)
+
 ```bash
 # Run local CLI for testing
 node bin/cli.js --tag v1.0.0 --publish-npm
