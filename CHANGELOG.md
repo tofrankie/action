@@ -1,5 +1,9 @@
 # Changelog
 
+## action@0.0.5 - 2026-03-31
+
+- Update dependencies
+
 ## action@0.0.4 - 2026-03-22
 
 - Remove custom `npm-token` parameter, favoring `.npmrc` or environment variables for NPM auth
