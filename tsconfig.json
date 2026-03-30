@@ -1,20 +1,18 @@
 {
+  "extends": "@tofrankie/tsconfig/node.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022"],
     "baseUrl": ".",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "paths": {
       "@/*": ["src/*"]
     },
     "resolveJsonModule": true,
     "types": ["node"],
-    "strict": true,
-    "outDir": "dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"]
 }
