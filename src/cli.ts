@@ -12,6 +12,7 @@ import { createGitHubReleaseClient } from '@/core/github-client.js'
 import { selectTagsForPackage } from '@/core/github-tags.js'
 import {
   isMonorepoWorkspace,
+  matchPackageBySpecifier,
   resolvePackageDir,
   scanWorkspacePackages,
 } from '@/core/package-resolver.js'
@@ -44,8 +45,10 @@ async function runCli(): Promise<void> {
   const packages = await listPackages(rootDir)
   if (packages.length === 0) throw new Error(formatMessage('No publishable packages found.'))
 
-  const selectedPackage =
-    packages.length === 1
+  const packageSpecifier = args.package?.trim()
+  const selectedPackage = packageSpecifier
+    ? matchPackageBySpecifier(packages, packageSpecifier)
+    : packages.length === 1
       ? packages[0]
       : await select({
           message: 'Select package to release',
@@ -71,15 +74,27 @@ async function runCli(): Promise<void> {
     )
   }
 
-  const selectedTag = args.tag
-    ? args.tag
-    : await select({
-        message: 'Select tag to release',
-        choices: selectableTags.map(item => ({
-          name: `${item.rawTag}${item.isPrerelease ? ' (prerelease)' : ''}`,
-          value: item.rawTag,
-        })),
-      })
+  const tagFromArgs = args.tag?.trim()
+  if (packageSpecifier && tagFromArgs) {
+    const tagAllowed = selectableTags.some(item => item.rawTag === tagFromArgs)
+    if (!tagAllowed) {
+      throw new Error(
+        formatMessage(
+          `Tag "${tagFromArgs}" does not match package ${selectedPackage.name} (not in this package's release tags on GitHub).`
+        )
+      )
+    }
+  }
+
+  const selectedTag =
+    tagFromArgs ||
+    (await select({
+      message: 'Select tag to release',
+      choices: selectableTags.map(item => ({
+        name: `${item.rawTag}${item.isPrerelease ? ' (prerelease)' : ''}`,
+        value: item.rawTag,
+      })),
+    }))
 
   const parsed = parseTag(selectedTag, !isMonorepo)
   const resolvedPackage = await resolvePackageDir({
@@ -170,6 +185,7 @@ async function runCli(): Promise<void> {
 
 export interface CliArgs {
   token?: string
+  package?: string
   tag?: string
   ref?: string
   publishNpm: boolean
@@ -181,6 +197,7 @@ export function parseArgs(argv: string[]): CliArgs {
     .name('tofrankie-release')
     .description('Create or update GitHub Release from local repository')
     .option('--token <token>', 'GitHub token')
+    .option('--package <name>', 'package name from package.json (skip package prompt)')
     .option('--tag <tag>', 'tag to release (skip tag prompt)')
     .option('--ref <ref>', 'ref to validate against tag')
     .option('--publish-npm', 'publish package to npm', false)
@@ -189,6 +206,7 @@ export function parseArgs(argv: string[]): CliArgs {
   program.parse(argv, { from: 'user' })
   const opts = program.opts<{
     token?: string
+    package?: string
     tag?: string
     ref?: string
     publishNpm: boolean
@@ -197,6 +215,7 @@ export function parseArgs(argv: string[]): CliArgs {
 
   return {
     token: opts.token,
+    package: opts.package,
     tag: opts.tag,
     ref: opts.ref,
     publishNpm: opts.publishNpm,

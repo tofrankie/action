@@ -2,7 +2,11 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { isMonorepoWorkspace, resolvePackageDir } from '@/core/package-resolver.js'
+import {
+  isMonorepoWorkspace,
+  matchPackageBySpecifier,
+  resolvePackageDir,
+} from '@/core/package-resolver.js'
 
 const tempDirs: string[] = []
 
@@ -21,6 +25,30 @@ async function mkRepo(structure: Record<string, string>): Promise<string> {
 
 afterEach(async () => {
   await Promise.all(tempDirs.splice(0).map(dir => fs.rm(dir, { recursive: true, force: true })))
+})
+
+const pkgs = (names: string[]) => names.map(name => ({ name, dir: `/x/${name}` }))
+
+describe('matchPackageBySpecifier', () => {
+  it('resolves exact package name', () => {
+    const list = pkgs(['@scope/a', '@scope/b'])
+    expect(matchPackageBySpecifier(list, '@scope/a').name).toBe('@scope/a')
+  })
+
+  it('resolves unique unscoped name', () => {
+    const list = pkgs(['@scope/only'])
+    expect(matchPackageBySpecifier(list, 'only').name).toBe('@scope/only')
+  })
+
+  it('throws when unknown', () => {
+    const list = pkgs(['@scope/a'])
+    expect(() => matchPackageBySpecifier(list, '@scope/z')).toThrow('Unknown package')
+  })
+
+  it('throws when unscoped is ambiguous', () => {
+    const list = pkgs(['@foo/lib', '@bar/lib'])
+    expect(() => matchPackageBySpecifier(list, 'lib')).toThrow('Ambiguous package')
+  })
 })
 
 describe('resolvePackageDir', () => {

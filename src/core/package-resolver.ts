@@ -46,6 +46,34 @@ async function loadWorkspaceGlobs(rootDir: string): Promise<string[]> {
   }
 }
 
+export function matchPackageBySpecifier(
+  packages: WorkspacePackage[],
+  specifier: string
+): WorkspacePackage {
+  const trimmed = specifier.trim()
+  if (!trimmed) {
+    throw new DomainError('INVALID_PACKAGE_SPEC', 'Package name must be non-empty.')
+  }
+
+  const exact = packages.filter(item => item.name === trimmed)
+  if (exact.length === 1) return exact[0]
+
+  const unscoped = trimmed.split('/').pop() ?? trimmed
+  const byUnscoped = packages.filter(item => (item.name.split('/').pop() ?? item.name) === unscoped)
+  if (byUnscoped.length === 1) return byUnscoped[0]
+  if (byUnscoped.length > 1) {
+    throw new DomainError(
+      'PACKAGE_AMBIGUOUS',
+      `Ambiguous package "${trimmed}". Matches: ${byUnscoped.map(p => p.name).join(', ')}.`
+    )
+  }
+
+  throw new DomainError(
+    'PACKAGE_NOT_FOUND',
+    `Unknown package "${trimmed}". Known packages: ${packages.map(p => p.name).join(', ')}.`
+  )
+}
+
 export async function scanWorkspacePackages(rootDir: string): Promise<WorkspacePackage[]> {
   const globs = await loadWorkspaceGlobs(rootDir)
   if (globs.length === 0) return []
@@ -92,7 +120,9 @@ export async function resolvePackageDir(params: {
     throw new DomainError(
       'MONOREPO_PACKAGE_NAME_REQUIRED',
       'Monorepo tag must include package name.',
-      { hint: 'Use tag like @scope/name@1.2.3 or name@1.2.3.' }
+      {
+        hint: 'Use tag like @scope/name@1.2.3 or name@1.2.3.',
+      }
     )
   }
 

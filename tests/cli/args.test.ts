@@ -6,6 +6,8 @@ describe('cli parseArgs', () => {
     const got = parseArgs([
       '--token',
       'ghs_xxx',
+      '--package',
+      '@scope/pkg',
       '--tag',
       'v1.2.3',
       '--ref',
@@ -16,6 +18,7 @@ describe('cli parseArgs', () => {
 
     expect(got).toEqual({
       token: 'ghs_xxx',
+      package: '@scope/pkg',
       tag: 'v1.2.3',
       ref: 'refs/heads/main',
       publishNpm: true,
@@ -33,6 +36,7 @@ describe('cli parseArgs', () => {
     const got = parseArgs([])
     expect(got).toEqual({
       token: undefined,
+      package: undefined,
       tag: undefined,
       ref: undefined,
       publishNpm: false,
