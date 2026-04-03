@@ -1,7 +1,7 @@
 {
   "name": "@tofrankie/action",
   "type": "module",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "packageManager": "pnpm@10.32.0",
   "description": "GitHub Action for changelog-based releases",
   "author": "Frankie <1426203851@qq.com> (https://github.com/tofrankie)",
