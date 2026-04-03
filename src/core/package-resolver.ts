@@ -28,9 +28,7 @@ async function readJson<T>(filePath: string): Promise<T> {
 async function loadWorkspaceGlobs(rootDir: string): Promise<string[]> {
   const rootPkgPath = path.join(rootDir, 'package.json')
   const rootPkg = await readJson<PackageJson>(rootPkgPath)
-  const fromPkg = Array.isArray(rootPkg.workspaces)
-    ? rootPkg.workspaces
-    : rootPkg.workspaces?.packages
+  const fromPkg = Array.isArray(rootPkg.workspaces) ? rootPkg.workspaces : rootPkg.workspaces?.packages
 
   if (fromPkg && fromPkg.length > 0) {
     return fromPkg
@@ -46,10 +44,7 @@ async function loadWorkspaceGlobs(rootDir: string): Promise<string[]> {
   }
 }
 
-export function matchPackageBySpecifier(
-  packages: WorkspacePackage[],
-  specifier: string
-): WorkspacePackage {
+export function matchPackageBySpecifier(packages: WorkspacePackage[], specifier: string): WorkspacePackage {
   const trimmed = specifier.trim()
   if (!trimmed) {
     throw new DomainError('INVALID_PACKAGE_SPEC', 'Package name must be non-empty.')
@@ -108,22 +103,15 @@ export async function resolvePackageDir(params: {
     const rootPkg = await readJson<PackageJson>(path.join(rootDir, 'package.json'))
     const name = packageName ?? fallbackRootPackageName ?? rootPkg.name
     if (!name) {
-      throw new DomainError(
-        'PACKAGE_NAME_NOT_FOUND',
-        'Cannot resolve package name from package.json.'
-      )
+      throw new DomainError('PACKAGE_NAME_NOT_FOUND', 'Cannot resolve package name from package.json.')
     }
     return { isMonorepo: false, packageName: name, packageDir: rootDir }
   }
 
   if (!packageName) {
-    throw new DomainError(
-      'MONOREPO_PACKAGE_NAME_REQUIRED',
-      'Monorepo tag must include package name.',
-      {
-        hint: 'Use tag like @scope/name@1.2.3 or name@1.2.3.',
-      }
-    )
+    throw new DomainError('MONOREPO_PACKAGE_NAME_REQUIRED', 'Monorepo tag must include package name.', {
+      hint: 'Use tag like @scope/name@1.2.3 or name@1.2.3.',
+    })
   }
 
   const exact = workspacePackages.filter(item => item.name === packageName)

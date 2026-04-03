@@ -13,12 +13,7 @@ export async function readChangelogEntry(params: {
 }): Promise<ChangelogEntry> {
   const { changelogPath, packageName, version } = params
   const unscopedName = packageName.split('/').pop() ?? packageName
-  const candidates = [
-    `${packageName}@${version}`,
-    `${unscopedName}@${version}`,
-    `v${version}`,
-    version,
-  ]
+  const candidates = [`${packageName}@${version}`, `${unscopedName}@${version}`, `v${version}`, version]
 
   const content = await fs.readFile(changelogPath, 'utf8')
   const lines = content.split(/\r?\n/)

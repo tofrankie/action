@@ -17,9 +17,7 @@ export async function assertTagRefConsistency(input: {
   const refCommit = await input.client.getRefCommit(input.ref)
 
   if (!tagCommit || !refCommit) {
-    input.warn?.(
-      `Skip tag/ref consistency check. tagCommit=${tagCommit ?? 'null'} refCommit=${refCommit ?? 'null'}`
-    )
+    input.warn?.(`Skip tag/ref consistency check. tagCommit=${tagCommit ?? 'null'} refCommit=${refCommit ?? 'null'}`)
     return
   }
 

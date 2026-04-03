@@ -27,10 +27,7 @@ describe('resolveContext', () => {
 
   it('throws when no tag can be resolved', () => {
     expect(() =>
-      resolveContext(
-        { publishNpm: false, githubToken: 'ghs_xxx' },
-        { eventName: 'workflow_dispatch' }
-      )
+      resolveContext({ publishNpm: false, githubToken: 'ghs_xxx' }, { eventName: 'workflow_dispatch' })
     ).toThrow('Unable to resolve tag from inputs or GitHub ref.')
   })
 })

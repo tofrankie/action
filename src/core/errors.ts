@@ -3,11 +3,7 @@ export class DomainError extends Error {
   public readonly hint?: string
   public readonly context?: Record<string, unknown>
 
-  constructor(
-    code: string,
-    message: string,
-    options?: { hint?: string; context?: Record<string, unknown> }
-  ) {
+  constructor(code: string, message: string, options?: { hint?: string; context?: Record<string, unknown> }) {
     super(message)
     this.name = 'DomainError'
     this.code = code
