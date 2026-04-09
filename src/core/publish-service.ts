@@ -37,7 +37,10 @@ export interface PublishDeps {
   }
 }
 
-export async function publishRelease(req: PublishRequest, deps: PublishDeps): Promise<PublishResult> {
+export async function publishRelease(
+  req: PublishRequest,
+  deps: PublishDeps
+): Promise<PublishResult> {
   const rootDir = process.cwd()
   const isMonorepo = await isMonorepoWorkspace(rootDir)
   const firstParsed = parseTag(req.tag, !isMonorepo)
@@ -69,7 +72,9 @@ export async function publishRelease(req: PublishRequest, deps: PublishDeps): Pr
   })
 
   deps.logger.info(`🐳 Resolved package: ${resolvedPackage.packageName}`)
-  deps.logger.info(`🐳 Resolved changelog: ${path.relative(rootDir, changelogPath.path)} (${changelogPath.source})`)
+  deps.logger.info(
+    `🐳 Resolved changelog: ${path.relative(rootDir, changelogPath.path)} (${changelogPath.source})`
+  )
 
   if (deps.releaseClient.getTagCommit && deps.releaseClient.getRefCommit) {
     await assertTagRefConsistency({

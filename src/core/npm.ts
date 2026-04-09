@@ -36,9 +36,13 @@ export async function publishNpmPackage(input: {
   } catch (error: any) {
     const stderr = error.stderr || ''
     if (stderr.includes('401') || stderr.includes('403') || stderr.includes('ENEEDAUTH')) {
-      throw new DomainError('NPM_PUBLISH_AUTH_ERROR', 'npm publish failed due to authentication error.', {
-        hint: 'Ensure you are logged in or have a valid .npmrc with auth token. For example: //registry.npmjs.org/:_authToken=<YOUR_TOKEN>',
-      })
+      throw new DomainError(
+        'NPM_PUBLISH_AUTH_ERROR',
+        'npm publish failed due to authentication error.',
+        {
+          hint: 'Ensure you are logged in or have a valid .npmrc with auth token. For example: //registry.npmjs.org/:_authToken=<YOUR_TOKEN>',
+        }
+      )
     }
     throw error
   }

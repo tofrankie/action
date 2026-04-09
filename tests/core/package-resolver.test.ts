@@ -2,7 +2,11 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { isMonorepoWorkspace, matchPackageBySpecifier, resolvePackageDir } from '@/core/package-resolver.js'
+import {
+  isMonorepoWorkspace,
+  matchPackageBySpecifier,
+  resolvePackageDir,
+} from '@/core/package-resolver.js'
 
 const tempDirs: string[] = []
 
@@ -73,7 +77,9 @@ describe('resolvePackageDir', () => {
       'package.json': JSON.stringify({ workspaces: ['packages/*'] }),
       'packages/action/package.json': JSON.stringify({ name: '@tofrankie/action' }),
     })
-    await expect(resolvePackageDir({ rootDir: repo })).rejects.toThrow('Monorepo tag must include package name')
+    await expect(resolvePackageDir({ rootDir: repo })).rejects.toThrow(
+      'Monorepo tag must include package name'
+    )
   })
 
   it('detects workspace mode via helper', async () => {

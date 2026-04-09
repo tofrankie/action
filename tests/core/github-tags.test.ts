@@ -9,6 +9,9 @@ describe('selectTagsForPackage', () => {
       allowVersionOnlyTag: false,
     })
 
-    expect(got.map(item => item.rawTag)).toEqual(['@tofrankie/action@1.2.0', '@tofrankie/action@1.0.0'])
+    expect(got.map(item => item.rawTag)).toEqual([
+      '@tofrankie/action@1.2.0',
+      '@tofrankie/action@1.0.0',
+    ])
   })
 })

@@ -68,7 +68,9 @@ async function runCli(): Promise<void> {
   })
   if (selectableTags.length === 0) {
     throw new Error(
-      formatMessage(`No tags found for package ${selectedPackage.name}. Use --tag to specify one manually.`)
+      formatMessage(
+        `No tags found for package ${selectedPackage.name}. Use --tag to specify one manually.`
+      )
     )
   }
 
@@ -128,7 +130,12 @@ async function runCli(): Promise<void> {
     .getReleaseByTag({ owner, repo, tag: selectedTag })
     .then(() => true)
     .catch((error: unknown) => {
-      if (typeof error === 'object' && error !== null && 'status' in error && error.status === 404) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'status' in error &&
+        error.status === 404
+      ) {
         return false
       }
       throw error

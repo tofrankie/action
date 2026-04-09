@@ -22,7 +22,9 @@ async function run(): Promise<void> {
     const name = process.env.RELEASE_GIT_USER_NAME
     const email = process.env.RELEASE_GIT_USER_EMAIL
     if (!name?.trim() || !email?.trim()) {
-      throw new Error('In CI, set RELEASE_GIT_USER_NAME and RELEASE_GIT_USER_EMAIL (e.g. in the workflow env).')
+      throw new Error(
+        'In CI, set RELEASE_GIT_USER_NAME and RELEASE_GIT_USER_EMAIL (e.g. in the workflow env).'
+      )
     }
     await execa('git', ['config', 'user.name', name])
     await execa('git', ['config', 'user.email', email])

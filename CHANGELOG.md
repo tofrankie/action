@@ -1,5 +1,9 @@
 # Changelog
 
+## action@0.0.7 - 2026-04-09
+
+- Update dependencies
+
 ## action@0.0.6 - 2026-04-04
 
 - Add `--package` option to skip package selection prompt
