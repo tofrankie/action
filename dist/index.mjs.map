@@ -1,0 +1,1 @@
+{"version":3,"file":"index.mjs","names":[],"sources":["../src/index.ts"],"sourcesContent":["export default function noNodeApi(): never {\n  throw new Error(\n    '@tofrankie/action does not provide a Node.js API. Use it as a GitHub Action or via CLI command `tofrankie-release`.'\n  )\n}\n"],"mappings":";AAAA,SAAwB,YAAmB;AACzC,OAAM,IAAI,MACR,sHACD"}
