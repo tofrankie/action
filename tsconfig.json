@@ -1,18 +1,12 @@
 {
-  "extends": "@tofrankie/tsconfig/node.json",
+  "extends": "@tofrankie/tsconfig/node.lib.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "paths": {
       "@/*": ["src/*"]
     },
     "resolveJsonModule": true,
-    "types": ["node"],
-    "declaration": true,
-    "declarationMap": true,
-    "noEmit": true,
-    "forceConsistentCasingInFileNames": true
+    "types": ["node"]
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"]
 }

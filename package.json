@@ -58,29 +58,29 @@
     "publint": "publint"
   },
   "dependencies": {
-    "@actions/core": "^3.0.0",
-    "@actions/github": "^9.1.0",
-    "@inquirer/prompts": "^8.4.1",
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "@inquirer/prompts": "^8.5.2",
     "commander": "^14.0.3",
     "execa": "^9.6.1",
     "fast-glob": "^3.3.3",
-    "semver": "^7.7.2",
-    "yaml": "^2.8.3"
+    "semver": "^7.8.1",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@tofrankie/eslint": "^0.2.0",
+    "@tofrankie/eslint": "^0.3.1",
     "@tofrankie/prettier": "^0.2.0",
-    "@tofrankie/tsconfig": "^0.0.5",
-    "@types/node": "^25.5.2",
+    "@tofrankie/tsconfig": "^0.1.2",
+    "@types/node": "^25.9.1",
     "@types/semver": "^7.7.1",
-    "@vitest/coverage-v8": "^4.1.4",
-    "eslint": "^10.2.0",
-    "npm-run-all2": "^8.0.4",
-    "prettier": "^3.6.2",
-    "publint": "^0.3.18",
-    "tsdown": "^0.21.7",
+    "@vitest/coverage-v8": "^4.1.7",
+    "eslint": "^10.4.1",
+    "npm-run-all2": "^9.0.1",
+    "prettier": "^3.8.3",
+    "publint": "^0.3.21",
+    "tsdown": "^0.22.1",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.2",
-    "vitest": "^4.1.4"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.7"
   }
 }
