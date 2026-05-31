@@ -6,6 +6,7 @@ import {
   isMonorepoWorkspace,
   matchPackageBySpecifier,
   resolvePackageDir,
+  scanPublishablePackages,
 } from '@/core/package-resolver.js'
 
 const tempDirs: string[] = []
@@ -88,5 +89,18 @@ describe('resolvePackageDir', () => {
       'packages/a/package.json': JSON.stringify({ name: '@scope/a' }),
     })
     await expect(isMonorepoWorkspace(repo)).resolves.toBe(true)
+  })
+
+  it('includes root package when workspace also exists', async () => {
+    const repo = await mkRepo({
+      'package.json': JSON.stringify({
+        name: 'bytemd-plugin-github-alerts',
+        workspaces: ['playground'],
+      }),
+      'playground/package.json': JSON.stringify({ name: 'playground' }),
+    })
+
+    const got = await scanPublishablePackages(repo)
+    expect(got.map(item => item.name)).toEqual(['bytemd-plugin-github-alerts', 'playground'])
   })
 })

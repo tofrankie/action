@@ -20,6 +20,15 @@ interface PackageJson {
   workspaces?: string[] | { packages?: string[] }
 }
 
+async function readRootPackage(rootDir: string): Promise<WorkspacePackage | null> {
+  const rootPkg = await readJson<PackageJson>(path.join(rootDir, 'package.json'))
+  if (!rootPkg.name) return null
+  return {
+    name: rootPkg.name,
+    dir: rootDir,
+  }
+}
+
 async function readJson<T>(filePath: string): Promise<T> {
   const content = await fs.readFile(filePath, 'utf8')
   return JSON.parse(content) as T
@@ -93,6 +102,18 @@ export async function scanWorkspacePackages(rootDir: string): Promise<WorkspaceP
     })
   }
   return result
+}
+
+export async function scanPublishablePackages(rootDir: string): Promise<WorkspacePackage[]> {
+  const [rootPackage, workspacePackages] = await Promise.all([
+    readRootPackage(rootDir),
+    scanWorkspacePackages(rootDir),
+  ])
+
+  if (!rootPackage) return workspacePackages
+
+  const hasSameName = workspacePackages.some(item => item.name === rootPackage.name)
+  return hasSameName ? workspacePackages : [rootPackage, ...workspacePackages]
 }
 
 export async function resolvePackageDir(params: {

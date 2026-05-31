@@ -14,7 +14,7 @@ import {
   isMonorepoWorkspace,
   matchPackageBySpecifier,
   resolvePackageDir,
-  scanWorkspacePackages,
+  scanPublishablePackages,
 } from '@/core/package-resolver.js'
 import { publishRelease } from '@/core/publish-service.js'
 import { parseTag } from '@/core/tag.js'
@@ -245,8 +245,8 @@ async function getRepo(): Promise<{ owner: string; repo: string }> {
 }
 
 async function listPackages(rootDir: string): Promise<Array<{ name: string; dir: string }>> {
-  const isMonorepo = await isMonorepoWorkspace(rootDir)
-  if (isMonorepo) return scanWorkspacePackages(rootDir)
+  const packages = await scanPublishablePackages(rootDir)
+  if (packages.length > 0) return packages
 
   const rootPkg = JSON.parse(await fs.readFile(path.join(rootDir, 'package.json'), 'utf8')) as {
     name?: string
