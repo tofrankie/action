@@ -1,5 +1,9 @@
 # Changelog
 
+## action@0.0.8 - 2026-06-01
+
+- Fix the problem of not being able to find the root package
+
 ## action@0.0.7 - 2026-04-09
 
 - Update dependencies
