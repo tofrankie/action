@@ -103,4 +103,19 @@ describe('resolvePackageDir', () => {
     const got = await scanPublishablePackages(repo)
     expect(got.map(item => item.name)).toEqual(['bytemd-plugin-github-alerts', 'playground'])
   })
+
+  it('resolves root package by unscoped tag name when workspace exists', async () => {
+    const repo = await mkRepo({
+      'package.json': JSON.stringify({
+        name: '@tofrankie/github-markdown-css',
+        workspaces: ['playground'],
+      }),
+      'playground/package.json': JSON.stringify({ name: 'playground' }),
+    })
+
+    const got = await resolvePackageDir({ rootDir: repo, packageName: 'github-markdown-css' })
+    expect(got.isMonorepo).toBe(true)
+    expect(got.packageDir).toBe(repo)
+    expect(got.packageName).toBe('@tofrankie/github-markdown-css')
+  })
 })

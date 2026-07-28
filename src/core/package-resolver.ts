@@ -123,6 +123,7 @@ export async function resolvePackageDir(params: {
 }): Promise<PackageResolution> {
   const { rootDir, packageName, fallbackRootPackageName } = params
   const workspacePackages = await scanWorkspacePackages(rootDir)
+  const publishablePackages = await scanPublishablePackages(rootDir)
   const isMonorepo = workspacePackages.length > 0
 
   if (!isMonorepo) {
@@ -147,7 +148,7 @@ export async function resolvePackageDir(params: {
     )
   }
 
-  const exact = workspacePackages.filter(item => item.name === packageName)
+  const exact = publishablePackages.filter(item => item.name === packageName)
   if (exact.length === 1) {
     return { isMonorepo: true, packageName: exact[0].name, packageDir: exact[0].dir }
   }
@@ -156,7 +157,7 @@ export async function resolvePackageDir(params: {
   }
 
   const unscoped = packageName.split('/').pop() ?? packageName
-  const byUnscoped = workspacePackages.filter(item => item.name.split('/').pop() === unscoped)
+  const byUnscoped = publishablePackages.filter(item => item.name.split('/').pop() === unscoped)
   if (byUnscoped.length === 1) {
     return { isMonorepo: true, packageName: byUnscoped[0].name, packageDir: byUnscoped[0].dir }
   }
