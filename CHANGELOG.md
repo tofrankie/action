@@ -1,5 +1,9 @@
 # Changelog
 
+## action@0.0.9 - 2026-07-28
+
+- FIx the problem of unable to recognize non-scoped package tag in root directory
+
 ## action@0.0.8 - 2026-06-01
 
 - Fix the problem of not being able to find the root package
